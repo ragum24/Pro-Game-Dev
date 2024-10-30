@@ -1,0 +1,16 @@
+class fruits:
+    def __init__(self,name,taste,size,shape,colour):
+        self.name=name
+        self.taste=taste
+        self.size=size
+        self.shape=shape
+        self.colour=colour
+    def details(self):
+        print(f"Name of the fruit is {self.name}")
+        print(f"Taste of the friut is {self.taste}")
+        print(f"Size of the fruit is {self.size}")
+        print(f"Shape of the fruit is {self.shape}")
+        print(f"Colour of the fruit is {self.colour}")
+F1=fruits("mango","sweet to tangy aka mango","average size of a mango","curved ovalish shape aka mango","orangey-yellow aka mango")
+F1.details()
+F1.size="7cm to 15cm"
