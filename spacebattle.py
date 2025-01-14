@@ -50,13 +50,39 @@ def chip_move(keys_pressed):
         chips_r.y-=10
     if keys_pressed[pygame.K_s] and chips_r.y < 700:
         chips_r.y+=10
+def ammo(chips_ammo,ships_ammo):
+    global orangeh,yellowh
+    for i in chips_ammo:
+        i.x+=8
+        if chips_r.colliderect(i):
+            orangeh-=1
+            ships_ammo.remove(i)
+        elif i.x > 700:
+            ships_ammo.remove(i)
+    for i in ships_ammo:
+        i.x-=8
+        if ships_r.colliderect(i):
+            yellowh-=1
+            chips_ammo.remove(i)
+        elif i.x < 0:
+            chips_ammo.remove(i)
+
 while True:
     clock.tick(120)
     for event in pygame.event.get():
         if event.type==pygame.QUIT:
             exit()
+        if event.type==pygame.KEYDOWN:
+            if event.key==pygame.K_LSHIFT:
+                bullet=pygame.Rect(chips_r.x+25,chips_r.y+25,10,5)
+                chips_ammo.append(bullet)
+        if event.type==pygame.KEYDOWN:
+            if event.key==pygame.K_RSHIFT:
+                bullet=pygame.Rect(ships_r.x+25,ships_r.y+25,10,5)
+                ships_ammo.append(bullet)        
     draw()
     keys_pressed=pygame.key.get_pressed()
     ship_move(keys_pressed)
     chip_move(keys_pressed)
+    ammo(chips_ammo,ships_ammo)
     pygame.display.update()
