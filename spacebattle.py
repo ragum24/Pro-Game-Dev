@@ -28,10 +28,10 @@ def draw():
     if game_over:
         g_o_t=font.render(f"Game Over! The winner is {winner}!",True,"white")
         screen.blit(g_o_t,(100,340))
-    for i in ships_ammo:
-        pygame.draw.rect(screen,"yellow",i)
-    for i in chips_ammo:
-        pygame.draw.rect(screen,"orange",i)
+    for bullet in ships_ammo:
+        pygame.draw.rect(screen,"yellow",bullet)
+    for bullet in chips_ammo:
+        pygame.draw.rect(screen,"orange",bullet)
 def ship_move(keys_pressed):
     if keys_pressed[pygame.K_LEFT] and ships_r.x > 365:
         ships_r.x-=10
@@ -51,21 +51,21 @@ def chip_move(keys_pressed):
     if keys_pressed[pygame.K_s] and chips_r.y < 700:
         chips_r.y+=10
 def ammo(chips_ammo,ships_ammo):
-    global orangeh,yellowh
-    for i in chips_ammo:
-        i.x+=8
-        if chips_r.colliderect(i):
+    global orangeh,yellowh,bullet
+    for bullet in chips_ammo:
+        bullet.x+=8
+        if chips_r.colliderect(bullet):
             orangeh-=1
-            ships_ammo.remove(i)
-        elif i.x > 700:
-            ships_ammo.remove(i)
-    for i in ships_ammo:
-        i.x-=8
-        if ships_r.colliderect(i):
+            chips_ammo.remove(bullet)
+        elif bullet.x > 700:
+            chips_ammo.remove(bullet)
+    for bullet in ships_ammo:
+        bullet.x-=8
+        if ships_r.colliderect(bullet):
             yellowh-=1
-            chips_ammo.remove(i)
-        elif i.x < 0:
-            chips_ammo.remove(i)
+            ships_ammo.remove(bullet)
+        elif bullet.x < 0:
+            ships_ammo.remove(bullet)
 
 while True:
     clock.tick(120)
@@ -73,16 +73,16 @@ while True:
         if event.type==pygame.QUIT:
             exit()
         if event.type==pygame.KEYDOWN:
-            if event.key==pygame.K_LSHIFT:
-                bullet=pygame.Rect(chips_r.x+25,chips_r.y+25,10,5)
+            if event.key==pygame.K_1:
+                bullet=pygame.Rect(chips_r.x+25,chips_r.y+25,10,10)
                 chips_ammo.append(bullet)
         if event.type==pygame.KEYDOWN:
-            if event.key==pygame.K_RSHIFT:
-                bullet=pygame.Rect(ships_r.x+25,ships_r.y+25,10,5)
+            if event.key==pygame.K_9:
+                bullet=pygame.Rect(ships_r.x+25,ships_r.y+25,10,10)
                 ships_ammo.append(bullet)        
     draw()
+    ammo(chips_ammo,ships_ammo)
     keys_pressed=pygame.key.get_pressed()
     ship_move(keys_pressed)
     chip_move(keys_pressed)
-    ammo(chips_ammo,ships_ammo)
     pygame.display.update()
