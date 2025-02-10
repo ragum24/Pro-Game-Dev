@@ -8,6 +8,9 @@ pygame.display.set_caption("Flappy Bird")
 clock=pygame.time.Clock()
 score=0
 game_over=False
+pipe_gap=200
+pipe_spawn=2500
+last_pipe=pygame.time.get_ticks()-pipe_spawn
 bg=pygame.image.load("b_g.jpg")
 floor=pygame.image.load("floor.png")
 restart=pygame.image.load("restart.png")
@@ -49,6 +52,23 @@ class bird(pygame.sprite.Sprite):
                 if self.index >= len(self.images):
                     self.index=0
                 self.image=self.images[self.index]
+
+class Pipe(pygame.sprite.Sprite):
+    def __init__(self,x,y,pos):
+        pygame.sprite.Sprite.__init__(self)
+        self.image=pygame.image.load("pole.png")
+        self.rect=self.image.get_rect()
+        if pos==1:
+            self.image=pygame.transform.flip(self.image,False,True)
+            self.rect.bottomleft=[x,y-(pipe_gap//2)]
+        elif pos==-1:
+            self.rect.topleft=[x,y+(pipe_gap//2)]
+    def update(self):
+        self.rect.x-=4
+        if self.rect.x < 0:
+            self.kill()
+
+pipes=pygame.sprite.Group()
 flock=pygame.sprite.Group()
 flappy=bird(100,300)
 flock.add(flappy)
@@ -56,10 +76,19 @@ flock.add(flappy)
 while True:
     clock.tick(60)
     screen.blit(bg,(0,0))
+    pipes.draw(screen)
     flock.draw(screen)
     flock.update()
     screen.blit(floor,(ground_scroll,768))
-    if game_over==False:
+    if game_over==False and flying==True:
+        current_time=pygame.time.get_ticks()
+        if current_time-last_pipe > pipe_spawn:
+            pipe_hieght=random.randint(-100,100)
+            top_pipe=Pipe(screen_width,(screen_height//2)+pipe_hieght,1)
+            bottom_pipe=Pipe(screen_width,(screen_height//2)+pipe_hieght,-1)
+            pipes.add(top_pipe)
+            pipes.add(bottom_pipe)
+        pipes.update()
 
         ground_scroll-=2
         if ground_scroll<-35:
