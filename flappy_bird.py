@@ -7,13 +7,15 @@ screen=pygame.display.set_mode((screen_width,screen_height))
 pygame.display.set_caption("Flappy Bird")
 clock=pygame.time.Clock()
 score=0
+font=pygame.font.SysFont("Times New Roman",60)
 game_over=False
 pipe_gap=200
-pipe_spawn=2500
+pipe_spawn=2500 #milliseconds
 last_pipe=pygame.time.get_ticks()-pipe_spawn
 bg=pygame.image.load("b_g.jpg")
 floor=pygame.image.load("floor.png")
 restart=pygame.image.load("restart.png")
+pass_pipe=False
 ground_scroll=0
 flying=False
 
@@ -38,14 +40,14 @@ class bird(pygame.sprite.Sprite):
             if self.rect.bottom <768:
                 self.rect.y+=self.speed
         if game_over==False:
-            if pygame.mouse.get_pressed()[0]==1 and self.clicked==False:
+            if pygame.mouse.get_pressed()[0]==1 and self.clicked==False: #left click pressed
                 self.clicked=True
                 self.speed=-10
-            if pygame.mouse.get_pressed()[0]==0:
+            if pygame.mouse.get_pressed()[0]==0: #left click unpressed
                 self.clicked=False
 
 
-            self.counter+=1
+            self.counter+=1 
             if self.counter==5:
                 self.counter=0
                 self.index+=1
@@ -80,6 +82,21 @@ while True:
     flock.draw(screen)
     flock.update()
     screen.blit(floor,(ground_scroll,768))
+    if len(pipes) >0:
+        if flock.sprites()[0].rect.left > pipes.sprites()[0].rect.left\
+            and flock.sprites()[0].rect.right < pipes.sprites()[0].rect.right\
+            and pass_pipe == False:
+            pass_pipe = True
+        if pass_pipe==True:
+
+            if flock.sprites()[0].rect.left >pipes.sprites()[0].rect.right:
+                score+=1
+                pass_pipe=False
+    txt=font.render("score:"+str(score),True,"black")
+    screen.blit(txt,(425,30))
+     #looking for collision
+    if pygame.sprite.groupcollide(flock,pipes,False,False):
+        game_over=True
     if game_over==False and flying==True:
         current_time=pygame.time.get_ticks()
         if current_time-last_pipe > pipe_spawn:
@@ -88,6 +105,7 @@ while True:
             bottom_pipe=Pipe(screen_width,(screen_height//2)+pipe_hieght,-1)
             pipes.add(top_pipe)
             pipes.add(bottom_pipe)
+            last_pipe=current_time
         pipes.update()
 
         ground_scroll-=2
